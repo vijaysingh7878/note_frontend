@@ -25,12 +25,12 @@ export default function Dashboard() {
     if (!token) {
       navigate("/login");
     } else {
-      fetchNotes();
+      fetchNotes("");
     }
   }, []);
   
 
-  const fetchNotes = async (searchValue) => {
+  const fetchNotes = async (searchValue="") => {
     try {
       const res = await axiosInstance.get(`/note?search=${searchValue}`);
       setNotes(res.data.notes);
@@ -55,7 +55,7 @@ export default function Dashboard() {
         toast.success("Note created");
       }
 
-      fetchNotes();
+      fetchNotes("");
       setForm({ title: "", content: "" });
       setEditId(null);
       setShowModal(false);
@@ -76,7 +76,7 @@ export default function Dashboard() {
     try {
       await axiosInstance.delete(`/note/${id}`);
       toast.success("Deleted successfully");
-      fetchNotes();
+      fetchNotes("");
     } catch (error) {
       toast.error("Delete failed");
     }
