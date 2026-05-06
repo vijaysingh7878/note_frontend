@@ -88,7 +88,7 @@ export default function Dashboard() {
 
       <div className="p-6">
         <div className="flex flex-col md:flex-row justify-between gap-3 mb-4">
-          {/* 🔍 Search */}
+        
           <input
             type="text"
             placeholder="Search notes..."
@@ -97,14 +97,14 @@ export default function Dashboard() {
             onChange={(e) => {
               const value = e.target.value;
               setSearch(value);
-              fetchNotes(value); // 🔥 API call on typing
+              fetchNotes(value); 
             }}
           />
 
-          {/* ➕ Add Button */}
+         
           <button
             onClick={() => setShowModal(true)}
-            className="bg-black text-white px-4 py-2 rounded"
+            className="bg-black text-white px-4 py-2 rounded cursor-pointer"
           >
             + Add Note
           </button>
