@@ -9,6 +9,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [notes, setNotes] = useState([]);
+  const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,6 @@ export default function Dashboard() {
     content: "",
   });
 
-  // 🔐 Auth check + fetch notes
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -28,18 +28,17 @@ export default function Dashboard() {
       fetchNotes();
     }
   }, []);
+  
 
-  // 📥 GET NOTES
-  const fetchNotes = async () => {
+  const fetchNotes = async (searchValue) => {
     try {
-      const res = await axiosInstance.get("/note");
+      const res = await axiosInstance.get(`/note?search=${searchValue}`);
       setNotes(res.data.notes);
     } catch (error) {
       toast.error("Failed to load notes");
     }
   };
 
- 
   const handleSave = async () => {
     try {
       if (!form.title || !form.content) {
@@ -49,16 +48,14 @@ export default function Dashboard() {
       setLoading(true);
 
       if (editId) {
-      
         await axiosInstance.put(`/note/${editId}`, form);
         toast.success("Note updated");
       } else {
-      
         await axiosInstance.post("/note", form);
         toast.success("Note created");
       }
 
-      fetchNotes(); 
+      fetchNotes();
       setForm({ title: "", content: "" });
       setEditId(null);
       setShowModal(false);
@@ -69,13 +66,11 @@ export default function Dashboard() {
     }
   };
 
-
   const handleEdit = (note) => {
     setForm({ title: note.title, content: note.content });
     setEditId(note._id);
     setShowModal(true);
   };
-
 
   const handleDelete = async (id) => {
     try {
@@ -92,11 +87,24 @@ export default function Dashboard() {
       <Header />
 
       <div className="p-6">
-        {/* Add Button */}
-        <div className="flex justify-end mb-4">
+        <div className="flex flex-col md:flex-row justify-between gap-3 mb-4">
+          {/* 🔍 Search */}
+          <input
+            type="text"
+            placeholder="Search notes..."
+            className="p-2 border rounded w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-[#a9827b]"
+            value={search}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearch(value);
+              fetchNotes(value); // 🔥 API call on typing
+            }}
+          />
+
+          {/* ➕ Add Button */}
           <button
             onClick={() => setShowModal(true)}
-            className="bg-black text-white px-4 py-2 rounded cursor-pointer"
+            className="bg-black text-white px-4 py-2 rounded"
           >
             + Add Note
           </button>
@@ -136,15 +144,16 @@ export default function Dashboard() {
       {showModal && (
         <div
           className="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-center z-50"
-          onClick={() => setShowModal(false)} 
+          onClick={() => setShowModal(false)}
         >
           <div
             className="bg-white p-5 rounded-xl w-80 shadow-xl relative"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
-          
             <button
-              onClick={() => {setShowModal(false),setForm({ title: "", content: "" })}}
+              onClick={() => {
+                (setShowModal(false), setForm({ title: "", content: "" }));
+              }}
               className="absolute top-3 right-3 text-gray-500 cursor-pointer hover:text-black text-lg font-bold"
             >
               ✕
@@ -174,7 +183,9 @@ export default function Dashboard() {
             {/* Actions */}
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => {setShowModal(false),setForm({ title: "", content: "" })}}
+                onClick={() => {
+                  (setShowModal(false), setForm({ title: "", content: "" }));
+                }}
                 className="px-3 py-1 text-gray-600 hover:text-black cursor-pointer"
               >
                 Cancel
