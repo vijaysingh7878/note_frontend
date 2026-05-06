@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user"); 
+    toast.success("logout Successfully")
     navigate("/login"); 
   };
 
@@ -44,7 +46,7 @@ export default function Header() {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 bg-black text-white px-4 py-1.5 rounded hover:bg-gray-800 transition"
+          className="flex items-center gap-2 cursor-pointer bg-black text-white px-4 py-1.5 rounded hover:bg-gray-800 transition"
         >
           <FiLogOut size={16} />
           Logout

@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <ToastContainer />
+        <ToastContainer  autoClose={1000}/>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
