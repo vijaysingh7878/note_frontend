@@ -48,11 +48,11 @@ export default function Dashboard() {
       setLoading(true);
 
       if (editId) {
-        await axiosInstance.put(`/note/${editId}`, form);
-        toast.success("Note updated");
+      const res=  await axiosInstance.put(`/note/${editId}`, form);
+        toast.success(res.data.message||"Note updated");
       } else {
-        await axiosInstance.post("/note", form);
-        toast.success("Note created");
+       const res=  await axiosInstance.post("/note", form);
+        toast.success(res.data.message||"Note created");
       }
 
       fetchNotes("");
@@ -74,8 +74,8 @@ export default function Dashboard() {
 
   const handleDelete = async (id) => {
     try {
-      await axiosInstance.delete(`/note/${id}`);
-      toast.success("Deleted successfully");
+      const res= await axiosInstance.delete(`/note/${id}`);
+      toast.success(res.data.message||"Deleted successfully");
       fetchNotes("");
     } catch (error) {
       toast.error("Delete failed");
@@ -117,8 +117,8 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-3 gap-4">
             {notes.map((note) => (
               <div key={note._id} className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-semibold text-lg mb-1">{note.title}</h3>
-                <p className="text-gray-600 text-sm">{note.content}</p>
+                <h3 className="font-semibold text-lg mb-1 break-words whitespace-pre-wrap">{note.title}</h3>
+                <p className="text-gray-600 text-sm break-words whitespace-pre-wrap">{note.content}</p>
 
                 <div className="flex gap-2 mt-3">
                   <button
