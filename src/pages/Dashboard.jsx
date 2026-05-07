@@ -9,10 +9,11 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [notes, setNotes] = useState([]);
-  const [search, setSearch] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [renotes, setReNotes] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -27,10 +28,9 @@ export default function Dashboard() {
     } else {
       fetchNotes("");
     }
-  }, []);
-  
+  }, [renotes]);
 
-  const fetchNotes = async (searchValue="") => {
+  const fetchNotes = async (searchValue = "") => {
     try {
       const res = await axiosInstance.get(`/note?search=${searchValue}`);
       setNotes(res.data.notes);
@@ -44,25 +44,23 @@ export default function Dashboard() {
       if (!form.title || !form.content) {
         return toast.warning("All fields required");
       }
-
-      setLoading(true);
+      setShowModal(true);
 
       if (editId) {
-      const res=  await axiosInstance.put(`/note/${editId}`, form);
-        toast.success(res.data.message||"Note updated");
+        const res = await axiosInstance.put(`/note/${editId}`, form);
+        toast.success(res.data.message || "Note updated");
       } else {
-       const res=  await axiosInstance.post("/note", form);
-        toast.success(res.data.message||"Note created");
+        const res = await axiosInstance.post("/note", form);
+        toast.success(res.data.message || "Note created");
       }
 
       fetchNotes("");
       setForm({ title: "", content: "" });
       setEditId(null);
-      setShowModal(false);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error");
     } finally {
-      setLoading(false);
+      setShowModal(false);
     }
   };
 
@@ -74,8 +72,8 @@ export default function Dashboard() {
 
   const handleDelete = async (id) => {
     try {
-      const res= await axiosInstance.delete(`/note/${id}`);
-      toast.success(res.data.message||"Deleted successfully");
+      const res = await axiosInstance.delete(`/note/${id}`);
+      toast.success(res.data.message || "Deleted successfully");
       fetchNotes("");
     } catch (error) {
       toast.error("Delete failed");
@@ -84,31 +82,10 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
+      <Header setReNotes={setReNotes} setNotes={setNotes} />
 
       <div className="p-6">
-        <div className="flex flex-col md:flex-row justify-between gap-3 mb-4">
-        
-          <input
-            type="text"
-            placeholder="Search notes..."
-            className="p-2 border rounded w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-[#a9827b]"
-            value={search}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearch(value);
-              fetchNotes(value); 
-            }}
-          />
-
-         
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-black text-white px-4 py-2 rounded cursor-pointer"
-          >
-            + Add Note
-          </button>
-        </div>
+        <div className="flex flex-col md:flex-row justify-between gap-3 mb-4"></div>
 
         {/* Notes */}
         {notes.length === 0 ? (
@@ -117,8 +94,12 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-3 gap-4">
             {notes.map((note) => (
               <div key={note._id} className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-semibold text-lg mb-1 break-words whitespace-pre-wrap">{note.title}</h3>
-                <p className="text-gray-600 text-sm break-words whitespace-pre-wrap">{note.content}</p>
+                <h3 className="font-semibold text-lg mb-1 break-words whitespace-pre-wrap">
+                  {note.title}
+                </h3>
+                <p className="text-gray-600 text-sm break-words whitespace-pre-wrap">
+                  {note.content}
+                </p>
 
                 <div className="flex gap-2 mt-3">
                   <button
@@ -160,9 +141,7 @@ export default function Dashboard() {
             </button>
 
             {/* Title */}
-            <h2 className="font-semibold mb-3">
-              {editId ? "Edit Note" : "Add Note"}
-            </h2>
+            <h2 className="font-semibold mb-3">Add Note</h2>
 
             {/* Title Input */}
             <input
